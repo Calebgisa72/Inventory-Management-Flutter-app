@@ -1,0 +1,47 @@
+Patch instructions for charts_flutter 0.12.0 to fix Flutter 3.x compatibility issues:
+
+1. Replace all imports of 'hashValues' from 'package:flutter/widgets.dart' or 'dart:ui' with no import of 'hashValues'.
+
+2. Replace all calls to 'hashValues(...)' with 'Object.hash(...)' or 'Object.hashAll([...])' depending on the number of arguments:
+   - If multiple arguments, use Object.hash(arg1, arg2, ...)
+   - If a list or iterable, use Object.hashAll(list)
+
+3. Replace all occurrences of 'bodyText2' with 'bodyMedium' in the file lib/src/behaviors/legend/legend_entry_layout.dart.
+
+Example patch for lib/src/behaviors/a11y/domain_a11y_explore_behavior.dart:
+
+<<<<<<< ORIGINAL
+import 'package:flutter/widgets.dart' show hashValues;
+...
+int get hashCode {
+  return hashValues(minimumWidth, vocalizationCallback, exploreModeTrigger,
+      exploreModeEnabledAnnouncement, exploreModeDisabledAnnouncement);
+}
+=======
+
+import 'package:flutter/foundation.dart'; // for Object.hash
+...
+int get hashCode {
+  return Object.hash(minimumWidth, vocalizationCallback, exploreModeTrigger,
+      exploreModeEnabledAnnouncement, exploreModeDisabledAnnouncement);
+}
+>>>>>>> FIX
+
+Example patch for lib/src/behaviors/legend/legend_entry_layout.dart (bodyText2 replacement):
+
+<<<<<<< ORIGINAL
+color ??= Theme.of(context).textTheme.bodyText2!.color;
+=======
+
+color ??= Theme.of(context).textTheme.bodyMedium!.color;
+>>>>>>> FIX
+
+Repeat similar changes for all files where 'hashValues' is used.
+
+Note: You can fork the charts_flutter package, apply these changes, and use a dependency override in your pubspec.yaml:
+
+dependency_overrides:
+  charts_flutter:
+    path: ../path_to_your_fixed_charts_flutter
+
+This will fix the build errors caused by deprecated Flutter APIs.

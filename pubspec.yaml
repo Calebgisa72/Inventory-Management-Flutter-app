@@ -1,0 +1,42 @@
+name: inventory_management
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  carousel_slider: ^5.0.0
+  go_router: ^15.1.2
+  image_picker: ^1.0.2
+  fl_chart: ^1.0.0
+  firebase_core: ^3.13.1
+  firebase_auth: ^5.5.4
+  cloud_firestore: ^5.6.8
+  firebase_storage: ^12.4.6
+  flutter_slidable: ^4.0.0
+  firebase_app_check: 0.3.2+6
+  http: 1.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/inventory.png
+    - assets/images/inventorylist.png
+    - assets/images/report.png
+    - assets/images/stockout.png
+    - assets/images/shoe1.jpg
+    - assets/images/login.png
+    - assets/images/register.png
+    - assets/images/splesh.png
