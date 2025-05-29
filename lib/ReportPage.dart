@@ -7,17 +7,6 @@ class ReportPage extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
 
-  final List<Product> topSellingProducts = [
-    Product('Product D', 15, "assets/images/shoe1.jpg"),
-    Product('Product E', 12, "assets/images/shoe1.jpg"),
-    Product('Product F', 20, "assets/images/shoe1.jpg"),
-  ];
-
-  final List<Category> categoryDistribution = [
-    Category('Category X', 30),
-    Category('Category Y', 25),
-    Category('Category Z', 45),
-  ];
 
   ReportPage({super.key});
 
@@ -133,7 +122,7 @@ class ReportPage extends StatelessWidget {
   Widget _buildTopSellingProducts() {
     return Card(
       child: SizedBox(
-        width: 400.0, // Adjust the width to your preference
+        width: 400.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -146,31 +135,51 @@ class ReportPage extends StatelessWidget {
               const SizedBox(height: 8.0),
               SizedBox(
                 height: 140.0,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: topSellingProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = topSellingProducts[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 100.0,
-                            height: 100.0,
-                            alignment: Alignment.center,
-                            child: ClipRRect(
-                              child: Image.asset(
-                                product.imageUrl,
-                                fit: BoxFit.fill,
-                              ),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('users')
+                      .doc(user!.uid)
+                      .collection('products')
+                      .orderBy('sold', descending: true)
+                      .limit(5)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final topSellingProducts = snapshot.data!.docs;
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: topSellingProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = topSellingProducts[index];
+                          final productData =
+                              product.data() as Map<String, dynamic>;
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 100.0,
+                                  height: 100.0,
+                                  alignment: Alignment.center,
+                                  child: ClipRRect(
+                                    child: Image.network(
+                                      productData['imageUrl'] as String,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4.0),
+                                Text('Sold: ${productData['sold']}'),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 4.0),
-                          Text('Sold: ${product.quantity}'),
-                        ],
-                      ),
-                    );
+                          );
+                        },
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
                   },
                 ),
               ),
@@ -195,27 +204,43 @@ class ReportPage extends StatelessWidget {
             const SizedBox(height: 8.0),
             AspectRatio(
               aspectRatio: 1.5,
-              child: LineChart(
-                LineChartData(
-                  // Configure your line chart data here (mock data provided)
-                  titlesData: const FlTitlesData(show: true),
-                  borderData: FlBorderData(show: true),
-                  gridData: const FlGridData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 10),
-                        FlSpot(2, 20),
-                        FlSpot(4, 15),
-                        FlSpot(6, 18),
-                        FlSpot(8, 25),
-                      ],
-                      color: Colors.blue,
-                      isCurved: true,
-                      dotData: const FlDotData(show: true),
-                    ),
-                  ],
-                ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('users')
+                    .doc(user!.uid)
+                    .collection('stockTrends')
+                    .orderBy('date')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final stockTrendDocs = snapshot.data!.docs;
+                    List<FlSpot> spots = [];
+                    for (int i = 0; i < stockTrendDocs.length; i++) {
+                      final data = stockTrendDocs[i].data() as Map<String, dynamic>;
+                      final double yValue = (data['value'] as num).toDouble();
+                      spots.add(FlSpot(i.toDouble(), yValue));
+                    }
+                    return LineChart(
+                      LineChartData(
+                        titlesData: const FlTitlesData(show: true),
+                        borderData: FlBorderData(show: true),
+                        gridData: const FlGridData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: spots,
+                            color: Colors.blue,
+                            isCurved: true,
+                            dotData: const FlDotData(show: true),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
               ),
             ),
           ],
@@ -238,24 +263,55 @@ class ReportPage extends StatelessWidget {
             const SizedBox(height: 8.0),
             AspectRatio(
               aspectRatio: 1.5,
-              child: BarChart(
-                BarChartData(
-                  // Configure your bar chart data here (mock data provided)
-                  titlesData: const FlTitlesData(show: true),
-                  borderData: FlBorderData(show: true),
-                  gridData: const FlGridData(show: true),
-                  barGroups: categoryDistribution.map((category) {
-                    return BarChartGroupData(
-                      x: category.percentage,
-                      barRods: [
-                        BarChartRodData(
-                          toY: category.percentage.toDouble(),
-                          color: Colors.green,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('users')
+                    .doc(user!.uid)
+                    .collection('products')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final items = snapshot.data!.docs;
+                    final categoryCounts = <String, int>{};
+
+                    for (final item in items) {
+                      final categoryName = item['category'] as String;
+                      categoryCounts[categoryName] =
+                          (categoryCounts[categoryName] ?? 0) + 1;
+                    }
+
+                    final barGroups = <BarChartGroupData>[];
+                    int x = 0;
+                    categoryCounts.forEach((category, count) {
+                      barGroups.add(
+                        BarChartGroupData(
+                          x: x,
+                          barRods: [
+                            BarChartRodData(
+                              toY: count.toDouble(),
+                              color: Colors.green,
+                            ),
+                          ],
+                          showingTooltipIndicators: [0],
                         ),
-                      ],
+                      );
+                      x++;
+                    });
+
+                    return BarChart(
+                      BarChartData(
+                        titlesData: const FlTitlesData(show: true),
+                        borderData: FlBorderData(show: true),
+                        gridData: const FlGridData(show: true),
+                        barGroups: barGroups,
+                      ),
                     );
-                  }).toList(),
-                ),
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
               ),
             ),
           ],
