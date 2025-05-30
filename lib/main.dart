@@ -5,17 +5,17 @@ import 'package:inventory_management/BottomNavigationBar.dart';
 import 'package:inventory_management/LoginScreen.dart';
 import 'package:inventory_management/register.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Required for Firebase.initializeApp()
-
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.debug, // Use AndroidProvider.playIntegrity in production
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug, 
   );
-  runApp(MyApp()); // Replace MyApp with your app's widget
+  
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -61,12 +61,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
-    // Add a delay and navigate to the register page
-    Future.delayed(const Duration(seconds: 10), () {
-      GoRouter.of(context).go('/login');
+    
+  }
+
+  Future<void> _checkLoginStatus() async {
+    setState(() => isLoading = true);
+    final prefs = await SharedPreferences.getInstance();
+    final uid = prefs.getString('uid');
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (uid != null && uid.isNotEmpty) {
+        GoRouter.of(context).go('/home');
+      } else {
+        GoRouter.of(context).go('/login');
+      }
+      setState(() => isLoading = false);
     });
   }
 
@@ -78,21 +92,25 @@ class _SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Welcome to Bikaneza ",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700,color: Colors.deepOrangeAccent)),
-            Stack(
-              children: [
-                Image.asset("assets/images/splesh.png"),
-                Positioned(
-                  top: MediaQuery.of(context).size.height * .2,
-                  left: MediaQuery.of(context).size.width * .45,
-                  child: const Center(child: CircularProgressIndicator()),
-                )
-              ],
+            const Text("Welcome to Bikaneza",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.deepOrangeAccent)),
+            Image.asset("assets/images/splesh.png"),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed:  _checkLoginStatus,
+              child: isLoading 
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 31, 33, 46)),
+                      ),
+                    )
+                  : const Text("Get Started"),
             ),
-            
           ],
-        ), 
+        ),
       ),
     );
   }
@@ -101,7 +119,6 @@ class _SplashScreenState extends State<SplashScreen> {
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
 
-  // Implement the registration UI here
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,7 +140,6 @@ class RegisterPage extends StatelessWidget {
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

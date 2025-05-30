@@ -47,7 +47,7 @@ class _EditScreenState extends State<EditScreen> {
         TextEditingController(text: widget.cuProduct.expiredate.toString());
 
     _imagePicker = ImagePicker();
-    _pickedImage = File(widget.cuProduct.imageUrl);
+    _pickedImage = File(widget.cuProduct.imageUrl!);
   }
 
   Future<void> _pickImage() async {

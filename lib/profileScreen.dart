@@ -190,7 +190,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                   // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Product updated successfully'),
+                      content: Text('Profile  updated successfully'),
                     ),
                   );
                   // ignore: use_build_context_synchronously
@@ -238,13 +238,23 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    User? firebaseUser = _auth.currentUser;
+ Future<void> _fetchUserData() async {
+  print('[DEBUG] _fetchUserData() started');
+  
+  User? firebaseUser = _auth.currentUser;
+  print('[DEBUG] Current user: ${firebaseUser?.uid ?? 'null'}');
 
-    if (firebaseUser != null) {
-      DocumentSnapshot userDataSnapshot =
-          await _firestore.collection('users').doc(firebaseUser.uid).get();
+  if (firebaseUser != null) {
+    print('[DEBUG] Starting Firestore fetch...');
+    try {
+      DocumentSnapshot userDataSnapshot = 
+          await _firestore.collection('users').doc(firebaseUser.uid).get()
+              .timeout(const Duration(seconds: 10));
+      
+      print('[DEBUG] Firestore fetch completed');
+      
       if (userDataSnapshot.exists) {
+        print('[DEBUG] Document exists, updating state');
         setState(() {
           _user = myUser(
             uid: firebaseUser.uid,
@@ -253,15 +263,19 @@ class _ProfilePageState extends State<ProfilePage> {
             phone: userDataSnapshot['phone'],
             imageUrl: userDataSnapshot['imageUrl'],
           );
-          // ignore: avoid_print
-          print("########## fetching");
         });
+        print('[DEBUG] State updated successfully');
       } else {
-        // ignore: avoid_print
-        print("document not found ^^^^^*********");
+        print('[DEBUG] ERROR: Document does not exist');
       }
+    } catch (e) {
+      print('[DEBUG] EXCEPTION during fetch: $e');
     }
+  } else {
+    print('[DEBUG] No authenticated user');
   }
+  print('[DEBUG] _fetchUserData() completed');
+}
 
   Future<void> _loadUserProfile() async {
     // Load user profile data and update _userProfile

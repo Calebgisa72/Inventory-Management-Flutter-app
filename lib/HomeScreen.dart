@@ -1,11 +1,19 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:inventory_management/ImageTextCard.dart';
 import 'package:inventory_management/NotificationScreen.dart';
 import 'package:inventory_management/SearchBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  Future<void> _logout(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('uid');
+  if (context.mounted) GoRouter.of(context).go('/login');
+}
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +30,13 @@ class HomeScreen extends StatelessWidget {
                   IconButton(
                     padding: const EdgeInsets.only(bottom: 5),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NotificationPage(),
-                        ),
-                      );
+                      _logout(context);
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const NotificationPage(),
+                      //   ),
+                      // );
                     },
                     icon: const Icon(
                       Icons.notifications_none_outlined,

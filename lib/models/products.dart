@@ -5,7 +5,7 @@ class Product {
   final double price;
   final String distributor;
   final String category;
-  final String imageUrl;
+  final String? imageUrl;
   final String expiredate;
 
   Product({

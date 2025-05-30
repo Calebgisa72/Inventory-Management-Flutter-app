@@ -10,7 +10,7 @@ class DeleteScreen extends StatelessWidget {
         height: 470,
         width: 320,
         decoration: BoxDecoration(
-          color: const Color(0xffb6b3be1),
+          color: const Color.fromRGBO(107, 59, 225, 0.984),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -22,7 +22,7 @@ class DeleteScreen extends StatelessWidget {
                 width: 120.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100.0),
-                  color: const Color(0xffbffffff),
+                  color: const Color.fromARGB(250, 237, 220, 220),
                 ),
                 child: Center(
                   child: Image.asset(
@@ -38,7 +38,7 @@ class DeleteScreen extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 17.0,
-                      color: Color(0xffbd9d9d9),
+                      color: Color.fromARGB(250, 227, 219, 219),
                     ))),
             const SizedBox(
               height: 30,
@@ -49,7 +49,7 @@ class DeleteScreen extends StatelessWidget {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 17.0,
-                  color: Color(0xffbd9d9d9)),
+                  color: Color.fromARGB(250, 237, 218, 218)),
             )),
             Container(
               child: const Text(
@@ -57,7 +57,7 @@ class DeleteScreen extends StatelessWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 17.0,
-                    color: Color(0xffbd9d9d9)),
+                    color: Color.fromARGB(250, 216, 205, 205)),
               ),
             ),
             Padding(
@@ -68,7 +68,7 @@ class DeleteScreen extends StatelessWidget {
                   MaterialButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
-                    color: const Color(0xffbffffff),
+                    color: const Color.fromARGB(250, 241, 225, 225),
                     textColor: Colors.black,
                     height: 50.0,
                     onPressed: () {},
@@ -84,7 +84,7 @@ class DeleteScreen extends StatelessWidget {
                   MaterialButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
-                    color: const Color(0xffbffffff),
+                    color: const Color.fromARGB(250, 238, 221, 221),
                     textColor: Colors.black,
                     height: 50.0,
                     onPressed: () {},

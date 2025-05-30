@@ -50,7 +50,7 @@ class ItmeCard extends StatelessWidget {
                           bottomLeft: Radius.circular(10),
                           topLeft: Radius.circular(10)),
                       child: Image.network(
-                        currentProduct.imageUrl,
+                        currentProduct.imageUrl!,
                         fit: BoxFit.cover,
                       ),
                     ),

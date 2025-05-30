@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import "package:inventory_management/forgetpassword.dart";
 import 'package:inventory_management/showDialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'register.dart';
 
 // import 'Forget_Password_Page.dart';
@@ -16,6 +17,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
+   bool isLoading = false;
   void initstate() {
     _email = TextEditingController();
     _password = TextEditingController();
@@ -91,7 +93,7 @@ class _LoginViewState extends State<LoginView> {
                         color: Colors.white,
                       ),
                       filled: true,
-                      fillColor: Color.fromRGBO(252, 252, 252, .7),
+                      fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             width: 2,
@@ -99,7 +101,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(5))),
                       hintText: 'Enter your Email Here',
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(color: Colors.black),
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white))),
                 ),
@@ -113,16 +115,13 @@ class _LoginViewState extends State<LoginView> {
                   enableSuggestions: false,
                   autocorrect: false,
                   decoration: const InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.password,
-                      color: Colors.white,
-                    ),
+                   
                     suffixIcon: Icon(
                       Icons.disabled_visible,
                       color: Colors.white,
                     ),
                     filled: true,
-                    fillColor: Color.fromRGBO(252, 252, 252, .7),
+                    fillColor: Colors.white,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 2,
@@ -133,7 +132,7 @@ class _LoginViewState extends State<LoginView> {
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white)),
                     hintStyle: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -154,7 +153,7 @@ class _LoginViewState extends State<LoginView> {
                         },
                         child: const Text('Forgot password?',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                             )),
                       ),
                     ],
@@ -176,31 +175,44 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         )),
                     onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      try {
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                            email: email, password: password);
-                        final user = FirebaseAuth.instance.currentUser;
-                        if (user?.emailVerified ?? false) {
-                          // ignore: use_build_context_synchronously
-                          GoRouter.of(context).go('/home');
-                        } else {
-                          await showErrorDialog(
-                              context, 'Go to your Email and verify.');
-                        }
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'user-not-found') {
-                          // ignore: use_build_context_synchronously
-                          await showErrorDialog(context, 'User Not Found');
-                        } else if (e.code == 'wrong-password') {
-                          await showErrorDialog(
-                              // ignore: use_build_context_synchronously
-                              context,
-                              'Wrong password Entered');
-                        }
-                      }
-                    },
+  final email = _email.text;
+  final password = _password.text;
+  try {
+    // Show loading indicator
+    setState(() => isLoading = true);
+    
+    final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email, 
+      password: password
+    );
+    
+    final user = userCredential.user;
+    
+    if (user?.emailVerified ?? false) {
+      // Save UID to SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('uid', user!.uid);
+      
+      // Navigate to home
+      if (!mounted) return;
+      GoRouter.of(context).go('/home');
+    } else {
+      if (!mounted) return;
+      await showErrorDialog(context, 'Please verify your email first');
+    }
+  } on FirebaseAuthException catch (e) {
+    if (!mounted) return;
+    if (e.code == 'user-not-found') {
+      await showErrorDialog(context, 'User Not Found');
+    } else if (e.code == 'wrong-password') {
+      await showErrorDialog(context, 'Wrong password Entered');
+    }
+  } finally {
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
+  }
+},
                     child: const Text(
                       'Login',
                       style: TextStyle(

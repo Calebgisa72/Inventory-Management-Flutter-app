@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:inventory_management/Services/database.dart';
+import 'package:inventory_management/Services/sqlite_database_service.dart';
 import 'package:inventory_management/models/products.dart';
 import 'package:http/http.dart' as http;
+
 
 class AddProductForm extends StatefulWidget {
   const AddProductForm({super.key});
@@ -76,6 +79,18 @@ class _AddProductFormState extends State<AddProductForm> {
     }
 
     try {
+      final DatabaseServiceSqlite databaseService = DatabaseServiceSqlite.instance;
+
+      databaseService.insertProduct({
+        'name': newProduct.name,
+        'pid': newProduct.pid,
+        'quantity': newProduct.quantity,
+        'price': newProduct.price,
+        'distributor': newProduct.distributor,
+        'category': newProduct.category,
+        'expiredate': newProduct.expiredate,
+      });
+
       final String imageUrl = await _uploadToCloudinary(_pickedImage!);
 
       await _firestore
