@@ -122,4 +122,77 @@ class FirestoreService {
 
     // Update product status or other necessary actions
   }
+
+  // Update method that uses Firestore document ID
+  Future<void> updateProductById(
+      String documentId, Map<String, dynamic> data) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception("User not logged in");
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('products')
+        .doc(documentId)
+        .update(data);
+  }
+
+  // Delete method that uses Firestore document ID
+  Future<void> deleteProductById(String documentId) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception("User not logged in");
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('products')
+        .doc(documentId)
+        .delete();
+  }
+
+  // Modify getProductsByName to include Firestore document ID
+  Future<List<Product>> getProductsByName(String name) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception("User not logged in");
+
+    final lowerCaseName = name.toLowerCase();
+
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('products')
+        .where('name', isGreaterThanOrEqualTo: lowerCaseName)
+        .where('name', isLessThanOrEqualTo: lowerCaseName + '\uf8ff')
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      return [];
+    }
+
+    List<Product> products = [];
+    for (var doc in snapshot.docs) {
+      try {
+        final data = doc.data() as Map<String, dynamic>;
+        products.add(
+          Product(
+            firestoreId: doc.id, // Include Firestore document ID
+            pid: data['pid'] ?? '',
+            name: data['name'] ?? '',
+            price: (data['price'] is double)
+                ? data['price']
+                : (data['price'] as num).toDouble(),
+            quantity: data['quantity'] ?? 0,
+            distributor: data['distributor'] ?? '',
+            category: data['category'] ?? '',
+            imageUrl: data['imageUrl'] ?? '',
+            expiredate: data['expiredate'] ?? '',
+          ),
+        );
+      } catch (e) {
+        print('Error parsing product: $e');
+      }
+    }
+
+    return products;
+  }
 }

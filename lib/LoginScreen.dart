@@ -17,11 +17,14 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
-   bool isLoading = false;
+  bool isLoading = false;
+  // Add password visibility state
+  bool _passwordVisible = false;
+
   void initstate() {
     _email = TextEditingController();
     _password = TextEditingController();
-
+    _passwordVisible = false;
     super.initState();
   }
 
@@ -111,27 +114,39 @@ class _LoginViewState extends State<LoginView> {
                 TextField(
                   cursorColor: const Color.fromRGBO(107, 10, 225, 1),
                   controller: _password,
-                  obscureText: true,
+                  // Update obscureText to use the visibility state
+                  obscureText: !_passwordVisible,
                   enableSuggestions: false,
                   autocorrect: false,
-                  decoration: const InputDecoration(
-                   
-                    suffixIcon: Icon(
-                      Icons.disabled_visible,
-                      color: Colors.black,
+                  decoration: InputDecoration(
+                    // Replace static icon with a toggle button
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        // Change the icon based on password visibility
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        // Toggle the password visibility state
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
+                    enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 2,
                           color: Colors.white,
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                     hintText: 'Enter your Password Here',
-                    focusedBorder: OutlineInputBorder(
+                    focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white)),
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                       color: Colors.black,
                     ),
                   ),
@@ -174,51 +189,68 @@ class _LoginViewState extends State<LoginView> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                         )),
-                    onPressed: () async {
-  final email = _email.text;
-  final password = _password.text;
-  try {
-    // Show loading indicator
-    setState(() => isLoading = true);
-    
-    final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email, 
-      password: password
-    );
-    
-    final user = userCredential.user;
-    
-    if (user?.emailVerified ?? false) {
-      // Save UID to SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('uid', user!.uid);
-      
-      // Navigate to home
-      if (!mounted) return;
-      GoRouter.of(context).go('/home');
-    } else {
-      if (!mounted) return;
-      await showErrorDialog(context, 'Please verify your email first');
-    }
-  } on FirebaseAuthException catch (e) {
-    if (!mounted) return;
-    if (e.code == 'user-not-found') {
-      await showErrorDialog(context, 'User Not Found');
-    } else if (e.code == 'wrong-password') {
-      await showErrorDialog(context, 'Wrong password Entered');
-    }
-  } finally {
-    if (mounted) {
-      setState(() => isLoading = false);
-    }
-  }
-},
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
+                    onPressed: isLoading
+                        ? null // Disable button when loading
+                        : () async {
+                            final email = _email.text;
+                            final password = _password.text;
+                            try {
+                              // Show loading indicator
+                              setState(() => isLoading = true);
+
+                              final userCredential = await FirebaseAuth.instance
+                                  .signInWithEmailAndPassword(
+                                      email: email, password: password);
+
+                              final user = userCredential.user;
+
+                              if (user?.emailVerified ?? false) {
+                                // Save UID to SharedPreferences
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setString('uid', user!.uid);
+
+                                // Navigate to home
+                                if (!mounted) return;
+                                GoRouter.of(context).go('/home');
+                              } else {
+                                if (!mounted) return;
+                                await showErrorDialog(
+                                    context, 'Please verify your email first');
+                              }
+                            } on FirebaseAuthException catch (e) {
+                              if (!mounted) return;
+                              if (e.code == 'user-not-found') {
+                                await showErrorDialog(
+                                    context, 'User Not Found');
+                              } else if (e.code == 'wrong-password') {
+                                await showErrorDialog(
+                                    context, 'Wrong password Entered');
+                              }
+                            } finally {
+                              if (mounted) {
+                                setState(() => isLoading = false);
+                              }
+                            }
+                          },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.0,
+                              ),
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ),

@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inventory_management/models/usermodel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileEditPage extends StatelessWidget {
   final myUser user;
@@ -15,13 +17,13 @@ class ProfileEditPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
-        title: Row(
-          children: [
-            SizedBox(
-              width: 12,
-            ),
-            const Text('Edit Profile'),
-          ],
+        title: const Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: ProfileEditForm(user: user),
@@ -231,6 +233,8 @@ class _ProfilePageState extends State<ProfilePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   myUser? _user;
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -238,44 +242,89 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchUserData();
   }
 
- Future<void> _fetchUserData() async {
-  print('[DEBUG] _fetchUserData() started');
-  
-  User? firebaseUser = _auth.currentUser;
-  print('[DEBUG] Current user: ${firebaseUser?.uid ?? 'null'}');
+  Future<void> _fetchUserData() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-  if (firebaseUser != null) {
-    print('[DEBUG] Starting Firestore fetch...');
-    try {
-      DocumentSnapshot userDataSnapshot = 
-          await _firestore.collection('users').doc(firebaseUser.uid).get()
-              .timeout(const Duration(seconds: 10));
-      
-      print('[DEBUG] Firestore fetch completed');
-      
-      if (userDataSnapshot.exists) {
-        print('[DEBUG] Document exists, updating state');
-        setState(() {
-          _user = myUser(
-            uid: firebaseUser.uid,
-            name: userDataSnapshot['name'],
-            username: userDataSnapshot['username'],
-            phone: userDataSnapshot['phone'],
-            imageUrl: userDataSnapshot['imageUrl'],
-          );
-        });
-        print('[DEBUG] State updated successfully');
-      } else {
-        print('[DEBUG] ERROR: Document does not exist');
-      }
-    } catch (e) {
-      print('[DEBUG] EXCEPTION during fetch: $e');
+    User? firebaseUser = _auth.currentUser;
+
+    if (firebaseUser == null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage =
+            "No user is signed in. Please sign in to view your profile.";
+      });
+      return;
     }
-  } else {
-    print('[DEBUG] No authenticated user');
+
+    try {
+      // First check if the user document exists
+      DocumentSnapshot userDocSnapshot =
+          await _firestore.collection('users').doc(firebaseUser.uid).get();
+
+      if (!userDocSnapshot.exists) {
+        // If user document doesn't exist, create one with default values
+        await _createDefaultUserProfile(firebaseUser);
+        // Fetch again after creating
+        userDocSnapshot =
+            await _firestore.collection('users').doc(firebaseUser.uid).get();
+      }
+
+      // Now we should have a user document
+      Map<String, dynamic> userData =
+          userDocSnapshot.data() as Map<String, dynamic>;
+
+      setState(() {
+        _user = myUser(
+          uid: firebaseUser.uid,
+          name: userData['name'] ?? firebaseUser.displayName ?? 'User',
+          username: userData['username'] ??
+              firebaseUser.email?.split('@')[0] ??
+              'Username',
+          phone: userData['phone'] ?? '',
+          imageUrl: userData['imageUrl'] ??
+              'https://ui-avatars.com/api/?name=${Uri.encodeComponent(userData['name'] ?? firebaseUser.displayName ?? 'User')}&background=6B3BE1&color=fff',
+        );
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Failed to load profile data. Please try again.";
+      });
+    }
   }
-  print('[DEBUG] _fetchUserData() completed');
-}
+
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('uid');
+    if (context.mounted) GoRouter.of(context).go('/login');
+  }
+
+  // Create default user profile if none exists
+  Future<void> _createDefaultUserProfile(User firebaseUser) async {
+    try {
+      String defaultName = firebaseUser.displayName ?? 'User';
+      String defaultUsername = firebaseUser.email?.split('@')[0] ?? 'user';
+
+      await _firestore.collection('users').doc(firebaseUser.uid).set({
+        'name': defaultName,
+        'username': defaultUsername,
+        'phone': '',
+        'email': firebaseUser.email ?? '',
+        'imageUrl': firebaseUser.photoURL ??
+            'https://ui-avatars.com/api/?name=${Uri.encodeComponent(defaultName)}&background=6B3BE1&color=fff',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      print("Created default profile for user: ${firebaseUser.uid}");
+    } catch (e) {
+      print("Error creating default profile: $e");
+    }
+  }
 
   Future<void> _loadUserProfile() async {
     // Load user profile data and update _userProfile
@@ -301,100 +350,162 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
-        title: Row(
-          children: [
-            SizedBox(
-              width: 20,
-            ),
-            const Text('Profile page'),
-          ],
+        title: const Text(
+          'Profile Page',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => _logout(context),
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.white,
+              size: 26,
+            ),
+          ),
+        ],
       ),
-      body: Center(
-        child: _user != null
-            ? SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    CircleAvatar(
-                      backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
-                      radius: 120,
-                      backgroundImage: NetworkImage(_user!.imageUrl),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Card(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 20, left: 20),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          child: Text(
-                            'Full Name            ${_user!.name}',
-                            style: const TextStyle(fontSize: 20),
-                          )),
-                    )),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Card(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 20, left: 20),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          child: Text(
-                            'User Name          ${_user!.username}',
-                            style: const TextStyle(fontSize: 20),
-                          )),
-                    )),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Card(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 20, left: 20),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          child: Text(
-                            'Phone                   ${_user!.phone}',
-                            style: const TextStyle(fontSize: 20),
-                          )),
-                    )),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _navigateToProfileEdit();
-                      },
-                      style: ButtonStyle(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Color.fromRGBO(107, 59, 225, 1),
+              ),
+            )
+          : _errorMessage != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 60,
+                        color: Colors.red.shade300,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(107, 59, 225, 1),
+                        ),
+                        onPressed: _fetchUserData,
+                        child: const Text(
+                          'Try Again',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 30),
+                      CircleAvatar(
+                        backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
+                        radius: 80,
+                        backgroundImage: NetworkImage(
+                          _user?.imageUrl ??
+                              'https://ui-avatars.com/api/?name=User&background=6B3BE1&color=fff',
+                        ),
+                        onBackgroundImageError: (_, __) {
+                          // Handle image loading error
+                        },
+                        child: _user?.imageUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 80,
+                                color: Colors.white,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildProfileCard(
+                        title: 'Full Name',
+                        value: _user?.name ?? 'Not provided',
+                        icon: Icons.person,
+                      ),
+                      _buildProfileCard(
+                        title: 'Username',
+                        value: _user?.username ?? 'Not provided',
+                        icon: Icons.alternate_email,
+                      ),
+                      _buildProfileCard(
+                        title: 'Phone',
+                        value: _user?.phone?.isEmpty == true
+                            ? 'Not provided'
+                            : _user?.phone ?? 'Not provided',
+                        icon: Icons.phone,
+                      ),
+                      const SizedBox(height: 30),
+                      ElevatedButton.icon(
+                        onPressed:
+                            _user != null ? _navigateToProfileEdit : null,
+                        style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all<Color>(
-                        const Color.fromRGBO(107, 59, 225, 1),
-                      )),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width * .8,
-                          child: const Center(
-                              child: Text(
-                            'Edit',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ))),
-                    ),
-                  ],
+                            const Color.fromRGBO(107, 59, 225, 1),
+                          ),
+                          padding: WidgetStateProperty.all<EdgeInsets>(
+                            const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        label: const Text(
+                          'Edit Profile',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            : const CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildProfileCard({
+    required String title,
+    required String value,
+    required IconData icon,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: const Color.fromRGBO(107, 59, 225, 0.2),
+          child: Icon(icon, color: const Color.fromRGBO(107, 59, 225, 1)),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+        subtitle: Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
     );
   }

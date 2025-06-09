@@ -7,7 +7,6 @@ class ReportPage extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
 
-
   ReportPage({super.key});
 
   @override
@@ -15,15 +14,17 @@ class ReportPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
-        title: Row(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .3,
-            ),
-            const Text('Inventory Report'),
-          ],
+        title: Text(
+          'Inventory Report',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        automaticallyImplyLeading: false,
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -216,7 +217,8 @@ class ReportPage extends StatelessWidget {
                     final stockTrendDocs = snapshot.data!.docs;
                     List<FlSpot> spots = [];
                     for (int i = 0; i < stockTrendDocs.length; i++) {
-                      final data = stockTrendDocs[i].data() as Map<String, dynamic>;
+                      final data =
+                          stockTrendDocs[i].data() as Map<String, dynamic>;
                       final double yValue = (data['value'] as num).toDouble();
                       spots.add(FlSpot(i.toDouble(), yValue));
                     }
@@ -325,8 +327,8 @@ class ReportPage extends StatelessWidget {
     User? user = FirebaseAuth.instance.currentUser;
     return Center(
       child: Container(
-        width: 150.0,
-        height: 150.0,
+        width: 140.0,
+        height: 140.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
           border: Border.all(color: Colors.green, width: 5),
@@ -354,7 +356,7 @@ class ReportPage extends StatelessWidget {
                     ),
                     const Text(
                       "Total Items",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 13),
                     ),
                   ],
                 );
@@ -375,8 +377,8 @@ class ReportPage extends StatelessWidget {
     User? user = FirebaseAuth.instance.currentUser;
     return Center(
       child: Container(
-        width: 150.0,
-        height: 150.0,
+        width: 140.0,
+        height: 140.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
           border: Border.all(color: Colors.blue, width: 5),
@@ -413,7 +415,7 @@ class ReportPage extends StatelessWidget {
                     ),
                     const Text(
                       "Total Categories",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 13),
                     ),
                   ],
                 );

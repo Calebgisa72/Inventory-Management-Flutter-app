@@ -10,58 +10,119 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   Future<void> _logout(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('uid');
-  if (context.mounted) GoRouter.of(context).go('/login');
-}
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('uid');
+    if (context.mounted) GoRouter.of(context).go('/login');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
+        title: const Text(
+          'Bikaneza ',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          // IconButton(
+          //   onPressed: () {
+          //     // Navigate to notifications page
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const NotificationPage(),
+          //       ),
+          //     );
+          //   },
+          //   icon: const Icon(
+          //     Icons.notifications_none_outlined,
+          //     color: Colors.white,
+          //     size: 28,
+          //   ),
+          // ),
+          IconButton(
+            onPressed: () => _logout(context),
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.white,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               const SizedBox(height: 30),
-              Row(
-                children: [
-                  Spacer(),
-                  IconButton(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    onPressed: () {
-                      _logout(context);
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const NotificationPage(),
-                      //   ),
-                      // );
-                    },
-                    icon: const Icon(
-                      Icons.notifications_none_outlined,
-                      size: 30,
+
+              // Welcome message card
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(107, 59, 225, 0.9),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                ],
-              ),
-              const Row(
-                children: [
-                  SizedBox(width: 30),
-                  Text(
-                    "Home",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Welcome to Bikaneza",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Keep tracking your stock efficiently",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.inventory_2,
+                            color: Colors.white.withOpacity(0.9)),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Manage your inventory with ease",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withOpacity(0.9),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
+
               const SizedBox(height: 15),
-              const MySlider(),
-              const SizedBox(height: 15),
-              const SearChBar(),
+              // const MySlider(),
+              // const SizedBox(height: 15),
+              // const SearChBar(),
               const SizedBox(height: 15),
               const DisplayCard(),
             ],
@@ -84,11 +145,7 @@ class _MySliderState extends State<MySlider> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> carouselItems = [
-      
-      
-    
-    ];
+    List<Widget> carouselItems = [];
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
