@@ -90,7 +90,7 @@ class _LoginViewState extends State<LoginView> {
                   decoration: const InputDecoration(
                       prefixIcon: Icon(
                         Icons.email,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                       filled: true,
                       fillColor: Colors.white,
@@ -118,7 +118,7 @@ class _LoginViewState extends State<LoginView> {
                    
                     suffixIcon: Icon(
                       Icons.disabled_visible,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     filled: true,
                     fillColor: Colors.white,

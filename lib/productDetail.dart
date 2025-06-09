@@ -57,7 +57,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                   child: Image.network(
-                    _product.imageUrl,
+                    _product.imageUrl ?? 'https://placeholder.com/placeholder.png',
                     fit: BoxFit.cover,
                   ),
                 ),

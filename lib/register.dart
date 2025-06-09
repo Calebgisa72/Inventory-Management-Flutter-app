@@ -23,7 +23,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+bool _isPasswordVisible = false;
   Future<void> _addUserToFirestore(myUser newUser) async {
     try {
       await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
@@ -80,6 +80,7 @@ class _RegisterViewState extends State<RegisterView> {
                   'Registration',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: Colors.deepOrangeAccent,
                     fontSize: 24,
                   ),
                 ),
@@ -93,7 +94,7 @@ class _RegisterViewState extends State<RegisterView> {
               height: 10,
             ),
             Container(
-              height: MediaQuery.of(context).size.height * .617,
+              height: MediaQuery.of(context).size.height * .700,
               decoration: const BoxDecoration(
                   color: Color.fromRGBO(107, 59, 225, .85),
                   borderRadius: BorderRadius.only(
@@ -115,10 +116,10 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.person_3_outlined,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                           filled: true,
-                          fillColor: Color.fromRGBO(252, 252, 252, .7),
+                          fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 width: 2,
@@ -129,7 +130,7 @@ class _RegisterViewState extends State<RegisterView> {
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -144,10 +145,10 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.supervised_user_circle_outlined,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                           filled: true,
-                          fillColor: Color.fromRGBO(252, 252, 252, .7),
+                          fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 width: 2,
@@ -158,7 +159,7 @@ class _RegisterViewState extends State<RegisterView> {
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -173,21 +174,21 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.phone_android_outlined,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                           filled: true,
-                          fillColor: Color.fromRGBO(252, 252, 252, .7),
+                          fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 width: 2,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                               borderRadius: BorderRadius.all(Radius.circular(5))),
                           hintText: 'Enter your Phone number',
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -203,19 +204,19 @@ class _RegisterViewState extends State<RegisterView> {
                         decoration: const InputDecoration(
                             prefixIcon: Icon(
                               Icons.email,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                             filled: true,
-                            fillColor: Color.fromRGBO(252, 252, 252, .7),
+                            fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 2,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(5))),
                             hintText: 'Enter your Email Here',
-                            hintStyle: TextStyle(color: Colors.white),
+                            hintStyle: TextStyle(color: Colors.black),
                             focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white))),
                       ),
@@ -229,16 +230,10 @@ class _RegisterViewState extends State<RegisterView> {
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.password,
-                            color: Colors.white,
-                          ),
-                          suffixIcon: Icon(
-                            Icons.disabled_visible,
-                            color: Colors.white,
-                          ),
+                          
+                        
                           filled: true,
-                          fillColor: Color.fromRGBO(252, 252, 252, .7),
+                          fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 width: 2,
@@ -249,7 +244,7 @@ class _RegisterViewState extends State<RegisterView> {
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white)),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ),

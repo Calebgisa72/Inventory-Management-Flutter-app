@@ -85,30 +85,9 @@ class _MySliderState extends State<MySlider> {
   @override
   Widget build(BuildContext context) {
     List<Widget> carouselItems = [
-      buildCarouselItem(
-        title: "Lorem ipsum dolor sit amet.",
-        content:
-            "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        total: 100,
-        stockIn: 50,
-        stockOut: 20,
-      ),
-      buildCarouselItem(
-        title: "Today",
-        date: "Aug 22",
-        content: "Here is a summary of today's updates. Stay tuned for more!",
-        total: 120,
-        stockIn: 60,
-        stockOut: 30,
-      ),
-      buildCarouselItem(
-        title: "Yesterday",
-        date: "Aug 21",
-        content: "Recap of yesterday's events. Don't miss out on any detail!",
-        total: 90,
-        stockIn: 40,
-        stockOut: 10,
-      ),
+      
+      
+    
     ];
 
     return Padding(
