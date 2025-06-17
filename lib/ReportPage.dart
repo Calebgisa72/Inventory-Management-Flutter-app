@@ -209,7 +209,7 @@ class ReportPage extends StatelessWidget {
                 stream: _firestore
                     .collection('users')
                     .doc(user!.uid)
-                    .collection('stockTrends')
+                    .collection('transactions')
                     .orderBy('date')
                     .snapshots(),
                 builder: (context, snapshot) {

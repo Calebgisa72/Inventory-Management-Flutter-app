@@ -16,6 +16,7 @@ class StockOutPage extends StatefulWidget {
 class _StockOutPageState extends State<StockOutPage> {
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _sellingPriceController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
   String? _selectedOption;
   Product? _selectedProduct;
@@ -30,6 +31,7 @@ class _StockOutPageState extends State<StockOutPage> {
   void dispose() {
     _productNameController.dispose();
     _quantityController.dispose();
+    _sellingPriceController.dispose();
     super.dispose();
   }
 
@@ -71,6 +73,7 @@ class _StockOutPageState extends State<StockOutPage> {
       pro = product;
       _searchResults = [];
       _productNameController.text = product.name;
+      // _sellingPriceController.text = product.sellingPrice.toString();
 
       // Store the Firestore document ID when selecting a product
       _firestoreDocId = product.firestoreId;
@@ -90,9 +93,18 @@ class _StockOutPageState extends State<StockOutPage> {
     final transactionsRef =
         firestore.collection('users').doc(user!.uid).collection('transactions');
 
+    // Calculate profit using the user-entered selling price
+    int quantity = int.parse(_quantityController.text);
+    double sellingPrice = double.parse(_sellingPriceController.text);
+    double costPrice = _selectedProduct!.price;
+    double profit = (sellingPrice - costPrice) * quantity;
+
     await transactionsRef.add({
       'productId': _selectedProduct!.pid,
-      'quantitySold': int.parse(_quantityController.text),
+      'quantitySold': quantity,
+      'sellingPrice': sellingPrice, // Use entered selling price
+      'costPrice': costPrice, // Add cost price for reference
+      'profit': profit, // Add calculated profit
       'saleDate': FieldValue.serverTimestamp(),
     });
 
@@ -215,6 +227,7 @@ class _StockOutPageState extends State<StockOutPage> {
                       _selectedOption = null;
                       _quantityController.clear();
                       _productNameController.clear();
+                      _sellingPriceController.clear();
                       _searchResults = [];
                     });
                   },
@@ -300,7 +313,7 @@ class _StockOutPageState extends State<StockOutPage> {
         ),
         backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
         title: const Text(
-          'Stock Out',
+          'Stock Out ',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -499,6 +512,61 @@ class _StockOutPageState extends State<StockOutPage> {
                     enabledBorder: OutlineInputBorder(
                       borderSide:
                           BorderSide(color: Color.fromRGBO(107, 59, 225, 1)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Add selling price field
+                TextFormField(
+                  controller: _sellingPriceController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Selling Price (per unit)',
+                    labelStyle:
+                        TextStyle(color: Color.fromRGBO(107, 59, 225, 1)),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(107, 59, 225, 1)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(107, 59, 225, 1)),
+                    ),
+                  ),
+                ),
+
+                // Display cost price for reference
+                const SizedBox(height: 16),
+                if (_selectedProduct != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Product Cost Price:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          '\$${_selectedProduct!.price.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                // Add a note about selling price
+                const Padding(
+                  padding: EdgeInsets.only(left: 4, bottom: 8),
+                  child: Text(
+                    'Please enter the selling price per unit to calculate profit',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey,
                     ),
                   ),
                 ),
