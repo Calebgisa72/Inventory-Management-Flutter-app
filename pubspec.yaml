@@ -24,7 +24,7 @@ dependencies:
   http: 1.3.0
   shared_preferences: ^2.2.2 
   sqflite: ^2.4.1
-  path:
+  path: ^1.8.3
   firebase_messaging: ^15.2.6
   flutter_local_notifications: ^17.2.2
   flutter_hooks: ^0.20.5

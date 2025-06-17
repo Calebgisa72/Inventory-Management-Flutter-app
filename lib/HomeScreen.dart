@@ -2,8 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_management/ImageTextCard.dart';
-import 'package:inventory_management/NotificationScreen.dart';
-import 'package:inventory_management/SearchBar.dart';
+import 'package:inventory_management/review_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -114,6 +113,46 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Review Row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Stock Overview',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        try {
+                          print('Attempting to navigate to review page...');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ReviewPage(),
+                            ),
+                          );
+                          print('Navigation to review page successful.');
+                        } catch (e) {
+                          print('Error navigating to review page: $e');
+                          print('Stack trace: ${StackTrace.current}');
+                        }
+                      },
+                      child: const Text(
+                        'View Review',
+                        style: TextStyle(
+                          color: Color.fromRGBO(107, 59, 225, 1),
+                        ),
+                      ),
                     ),
                   ],
                 ),
