@@ -43,18 +43,15 @@ class _LoginViewState extends State<LoginView> {
           const SizedBox(
             height: 70,
           ),
-          const Row(
-            children: [
-              SizedBox(
-                width: 20,
+          const Center(
+            child: Text(
+              'Sign in to Bikaneza',
+              style: TextStyle(
+                color: Color.fromRGBO(107, 59, 225, 1), // Changed from deepOrangeAccent
+                fontSize: 24,
+                fontWeight: FontWeight.w500
               ),
-              Text('Sign in to Bikaneza',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.deepOrangeAccent,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500)),
-            ],
+            ),
           ),
           const SizedBox(
             height: 30,
@@ -67,16 +64,17 @@ class _LoginViewState extends State<LoginView> {
             height: 40,
           ),
           Container(
-            height: MediaQuery.of(context).size.height * .5,
+            height: MediaQuery.of(context).size.height * .6,
             decoration: const BoxDecoration(
-                color: Color.fromRGBO(107, 59, 225, .85),
+                color: Color.fromRGBO(107, 59, 225, 1), // Made solid instead of .85 opacity
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(18),
                     topRight: Radius.circular(18))),
             child: Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
                 const SizedBox(
                   height: 20,
                 ),
@@ -92,7 +90,7 @@ class _LoginViewState extends State<LoginView> {
                   decoration: const InputDecoration(
                       prefixIcon: Icon(
                         Icons.email,
-                        color: Colors.black,
+                        color: Colors.white, // Changed from black
                       ),
                       filled: true,
                       fillColor: Colors.white,
@@ -108,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
                           borderSide: BorderSide(color: Colors.white))),
                 ),
                 const SizedBox(
-                  height: 12,
+                  height: 25, // Increased from 12 to 25
                 ),
                 TextField(
                   cursorColor: const Color.fromRGBO(107, 10, 225, 1),
@@ -125,7 +123,7 @@ class _LoginViewState extends State<LoginView> {
                         _passwordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: Colors.black,
+                        color: Color.fromRGBO(107, 10, 225, 1), // Changed from black
                       ),
                       onPressed: () {
                         // Toggle the password visibility state
@@ -146,12 +144,12 @@ class _LoginViewState extends State<LoginView> {
                     focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white)),
                     hintStyle: const TextStyle(
-                      color: Colors.black,
+                      color: Color.fromRGBO(107, 59, 225, 1), // Changed from black
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 4,
+                  height: 15, // Increased from 4 to 15
                 ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),
@@ -167,7 +165,7 @@ class _LoginViewState extends State<LoginView> {
                         },
                         child: const Text('Forgot password?',
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white, // Changed from black
                             )),
                       ),
                     ],
@@ -181,8 +179,7 @@ class _LoginViewState extends State<LoginView> {
                   child: TextButton(
                     style: ButtonStyle(
                         foregroundColor: WidgetStateProperty.all(Colors.white),
-                        backgroundColor: WidgetStateProperty.all(
-                            const Color.fromRGBO(107, 59, 225, 1)),
+                        backgroundColor: WidgetStateProperty.all(Colors.white),
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
@@ -247,7 +244,7 @@ class _LoginViewState extends State<LoginView> {
                               'Login',
                               style: TextStyle(
                                 fontSize: 20,
-                                color: Colors.white,
+                                color: Color.fromRGBO(107, 10, 225, 1),
                               ),
                             ),
                     ),
@@ -282,9 +279,12 @@ class _LoginViewState extends State<LoginView> {
                             MaterialPageRoute(
                                 builder: (context) => const RegisterView()));
                       },
-                      child: const Text(
-                        'Sign Up!!',
-                        style: TextStyle(fontWeight: FontWeight.w800),
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color:Colors.black,
+                          fontWeight: FontWeight.w800
+                        ),
                       ),
                     ),
                   ],

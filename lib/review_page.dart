@@ -238,7 +238,11 @@ class _ReviewPageState extends State<ReviewPage> {
                 
               ),
               
-              child: const Text('Submit Review')
+              child: const Text('Submit Review',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,),
+              )
               ,
             ),
             const SizedBox(height: 24),

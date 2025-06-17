@@ -22,7 +22,7 @@ class Product {
   });
 
   
-  factory Product.fromMap(Map<String, dynamic> data) {
+  factory Product.fromMap(Map<String, dynamic> data, String id) {
     return Product(
       pid: data['pid'] ?? '',
       name: data['name'] ?? '',
