@@ -89,7 +89,7 @@ class ItmeCard extends StatelessWidget {
                           padding: const EdgeInsets.only(
                               top: 10, left: 8, right: 20),
                           child: Text(
-                            "Quantity:${currentProduct.quantity}",
+                            "Quantity:${currentProduct.quantity} kg",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

@@ -81,7 +81,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   children: [
                     _buildProductInfoCard(),
                     const SizedBox(height: 16),
-                    _buildStockActivityCard(),
+                    
                     const SizedBox(height: 16),
                     _buildInventoryStatusCard(),
                   ],
@@ -180,7 +180,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const Divider(),
             const SizedBox(height: 8),
             _buildInfoRow('Product ID:', _product.pid),
-            _buildInfoRow('Price:', '\$${_product.price.toStringAsFixed(2)}'),
+            _buildInfoRow('Name:', _product.name),
+            _buildInfoRow('Quantity:', '${_product.quantity} kg'),
+           _buildInfoRow('Price:', '\$${_product.price.toStringAsFixed(2)}'),
             _buildInfoRow('Supplier:', _product.distributor),
             _buildInfoRow('Category:', _product.category),
             _buildInfoRow(
@@ -226,103 +228,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildStockActivityCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Stock Activity',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(107, 59, 225, 1),
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(107, 59, 225, 0.2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    'Daily',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color.fromRGBO(107, 59, 225, 1),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 220,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: PieChart(
-                      PieChartData(
-                        sections: data
-                            .map((e) => PieChartSectionData(
-                                  color: e.color,
-                                  value: e.value,
-                                  title: '',
-                                  radius: 50,
-                                  titlePositionPercentageOffset: 0.55,
-                                  badgeWidget: e.value > 1000
-                                      ? _Badge(
-                                          Icons.arrow_upward,
-                                          size: 18,
-                                          borderColor: e.color,
-                                        )
-                                      : null,
-                                ))
-                            .toList(),
-                        sectionsSpace: 2,
-                        centerSpaceRadius: 40,
-                        centerSpaceColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: data
-                            .map((e) => Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: _buildLegendItem(
-                                      e.label, e.color, e.value),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  
+    
+  
 
   Widget _buildInventoryStatusCard() {
     Color statusColor = Colors.green;
@@ -350,7 +258,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Inventory Status',
+              'Stock Status',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

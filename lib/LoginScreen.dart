@@ -6,7 +6,6 @@ import 'package:inventory_management/showDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'register.dart';
 
-// import 'Forget_Password_Page.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

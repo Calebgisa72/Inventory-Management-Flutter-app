@@ -12,11 +12,13 @@ class NotificationService {
   String? get fcmToken => _fcmToken;
   bool _isInitialized = false;
 
+  FirebaseMessaging get firebaseMessaging => _firebaseMessaging;
+
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      // Request permission
+      
       NotificationSettings settings =
           await _firebaseMessaging.requestPermission(
         alert: true,
@@ -60,9 +62,9 @@ class NotificationService {
 
   void _handleMessage(RemoteMessage message) {
     if (message.notification != null) {
-      print('📢 Notification Title: ${message.notification!.title}');
-      print('📝 Notification Body: ${message.notification!.body}');
-      print('📊 Notification Data: ${message.data}');
+      print('Notification Title: ${message.notification!.title}');
+      print(' Notification Body: ${message.notification!.body}');
+      print(' Notification Data: ${message.data}');
     }
   }
 
@@ -82,34 +84,7 @@ class NotificationService {
     }
   }
 
-  // // Method to show notification with context (for SnackBar)
-  // void showProductAddedSnackBar(BuildContext context, String productName) {
-  //   try {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Row(
-  //           children: [
-  //             const Icon(Icons.check_circle, color: Colors.white),
-  //             const SizedBox(width: 10),
-  //             Expanded(
-  //               child: Text(
-  //                 'Product "$productName" added successffully!',
-  //                 style: const TextStyle(fontWeight: FontWeight.bold),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         backgroundColor: Colors.green,
-  //         duration: const Duration(seconds: 3),
-  //         behavior: SnackBarBehavior.floating,
-  //       ),
-  //     );
-
-      print('✅ SnackBar notification shown for product: $productName');
-    } catch (e) {
-      print('❌ Error showing SnackBar: $e');
-    }
-  }
+ 
 
   Future<void> subscribeToTopic(String topic) async {
     await _firebaseMessaging.subscribeToTopic(topic);

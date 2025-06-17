@@ -7,7 +7,7 @@ class Product {
   final String category;
   final String imageUrl;
   final String expiredate;
-  final String firestoreId; // Add Firestore document ID
+  final String firestoreId; 
 
   Product({
     required this.pid,
@@ -18,10 +18,10 @@ class Product {
     required this.category,
     required this.imageUrl,
     required this.expiredate,
-    this.firestoreId = '', // Default empty string if not provided
+    this.firestoreId = '', 
   });
 
-  // Factory constructor to create Product from Firestore data
+  
   factory Product.fromMap(Map<String, dynamic> data) {
     return Product(
       pid: data['pid'] ?? '',
@@ -37,11 +37,9 @@ class Product {
       imageUrl: data['imageUrl'],
       expiredate: data['expiredate'] ?? '',
       firestoreId:
-          data['firestoreId'] ?? '', // Assuming Firestore ID is also stored
+          data['firestoreId'] ?? '', 
     );
   }
-
-  // Convert Product to Map for Firestore
   Map<String, dynamic> toMap() {
     return {
       'pid': pid,
@@ -52,7 +50,7 @@ class Product {
       'distributor': distributor,
       'imageUrl': imageUrl,
       'expiredate': expiredate,
-      'firestoreId': firestoreId, // Include Firestore ID in the map
+      'firestoreId': firestoreId, 
     };
   }
 }

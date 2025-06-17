@@ -64,7 +64,7 @@ class PushNotificationService {
     await androidPlugin?.createNotificationChannel(channel);
   }
 
-  // Show actual device notification
+  
   Future<void> showDeviceNotification({
     required String title,
     required String body,
@@ -149,7 +149,7 @@ class PushNotificationService {
   // Show rich in-app notification using SnackBar
   void showInAppNotification(BuildContext context, String productName) {
     try {
-      print('✅ In-app notification shown for product: $productName');
+      print(' In-app notification shown for product: $productName');
     } catch (e) {
       print('❌ Error showing in-app notification: $e');
     }
