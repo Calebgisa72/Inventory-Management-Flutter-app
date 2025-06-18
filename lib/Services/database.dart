@@ -175,7 +175,7 @@ class FirestoreService {
         final data = doc.data() as Map<String, dynamic>;
         products.add(
           Product(
-            firestoreId: doc.id, // Include Firestore document ID
+            firestoreId: doc.id, 
             pid: data['pid'] ?? '',
             name: data['name'] ?? '',
             price: (data['price'] is double)

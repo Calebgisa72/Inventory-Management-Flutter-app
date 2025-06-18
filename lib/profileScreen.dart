@@ -93,12 +93,12 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
               width: 150,
               decoration: BoxDecoration(
                 border:
-                    Border.all(color: const Color.fromRGBO(107, 59, 225, 1)),
+                    Border.all(color: Colors.deepOrange),
                 borderRadius: BorderRadius.circular(100),
               ),
               child: _pickedImage.path.isEmpty
                   ? const Icon(Icons.camera_alt,
-                      size: 60.0, color: Color.fromRGBO(107, 59, 225, 1))
+                      size: 60.0, color: Colors.black)
                   : Image.file(
                       _pickedImage, // Use the File object here
                       fit: BoxFit.fill,
@@ -153,8 +153,16 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
           const SizedBox(height: 16.0),
           ElevatedButton(
               style: const ButtonStyle(
+                alignment: Alignment(23, 34),
+                  padding: WidgetStatePropertyAll(
+                    
+                      EdgeInsets.symmetric(horizontal: 25, vertical: 23)),
                   backgroundColor:
-                      WidgetStatePropertyAll(Color.fromRGBO(107, 59, 225, 1))),
+                      WidgetStatePropertyAll(Color.fromRGBO(107, 59, 225, 1)),
+                      shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10))))),
               onPressed: () async {
                 Map<String, dynamic> updateUserInfo = {};
                 if (_fullNameController != widget.user.name) {
@@ -353,7 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text(
           'Profile Page',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.yellow,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -372,7 +380,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Color.fromRGBO(107, 59, 225, 1),
+                color: Colors.white,
               ),
             )
           : _errorMessage != null
@@ -395,7 +403,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              const Color.fromRGBO(107, 59, 225, 1),
+                            Colors.black,
                         ),
                         onPressed: _fetchUserData,
                         child: const Text(
@@ -412,7 +420,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       const SizedBox(height: 30),
                       CircleAvatar(
-                        backgroundColor: const Color.fromRGBO(107, 59, 225, 1),
+                        backgroundColor:Colors.white,
                         radius: 80,
                         backgroundImage: NetworkImage(
                           _user?.imageUrl ??
@@ -425,7 +433,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ? const Icon(
                                 Icons.person,
                                 size: 80,
-                                color: Colors.white,
+                                color: Colors.black12,
                               )
                             : null,
                       ),

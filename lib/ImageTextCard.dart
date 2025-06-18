@@ -91,23 +91,24 @@ class DisplayCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                
+                ImageTextCard(
+                  imagePath: 'assets/images/stockout.png',
+                  text: 'Stock Out',
+                  isTrue: true,
+                ),
                 ImageTextCard(
                   imagePath: 'assets/images/inventory.png',
                   text: 'Add Items',
                   isTrue: false,
                 ),
-                ImageTextCard(
-                  imagePath: 'assets/images/stockout.png',
-                  text: 'Stock Out',
-                  isTrue: true,
-                )
               ],
             ),
             Row(
               children: [
                 ImageTextCard(
                   imagePath: 'assets/images/report.png',
-                  text: 'Inventory Count',
+                  text: 'Inventory',
                   isTrue: true,
                 ),
                 ImageTextCard(
